@@ -430,6 +430,8 @@
             display: flex;
             flex-direction: column;
             cursor: none;
+            color: inherit;
+            text-decoration: none;
         }
         .project-card__img-wrap {
             flex: 1;
@@ -762,6 +764,8 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .footer__brand {
             font-family: 'Inter', sans-serif;
@@ -771,7 +775,7 @@
             text-transform: uppercase;
             color: rgba(255,255,255,0.4);
         }
-        .footer__legal { display: flex; gap: 24px; }
+        .footer__legal { display: flex; gap: 24px; flex-wrap: wrap; }
         .footer__legal a {
             font-family: 'Inter', sans-serif;
             font-weight: 300;
@@ -781,7 +785,13 @@
             color: rgba(255,255,255,0.4);
             text-decoration: none;
         }
-        .footer__row2 { text-align: center; }
+        .footer__row2 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
         .footer__copy {
             font-family: 'Inter', sans-serif;
             font-weight: 300;
@@ -789,6 +799,19 @@
             letter-spacing: 0.12em;
             color: rgba(255,255,255,0.3);
         }
+        .footer__credit {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.25);
+        }
+        .footer__credit a {
+            color: rgba(255,255,255,0.35);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .footer__credit a:hover { color: rgba(255,255,255,0.6); }
 
         /* ============================================================
            CSS Reveal — IntersectionObserver adds .is-visible
@@ -827,7 +850,16 @@
             body { cursor: auto; }
             .cursor { display: none; }
             .nav__links { display: none; }
-            .nav__hamburger { display: flex; }
+            .nav__hamburger {
+                display: flex;
+                cursor: pointer;
+                /* ensure 44px touch target */
+                min-width: 44px;
+                min-height: 44px;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .nav__close { cursor: pointer; min-height: 44px; }
 
             .studio__grid { grid-template-columns: 1fr; }
             .studio__right { padding-top: 0; }
@@ -846,15 +878,32 @@
                 flex-direction: column;
                 padding: 0 var(--h-pad);
                 transform: none !important;
+                gap: 48px;
             }
-            .project-card { width: 100%; height: auto; min-height: 70vw; }
-            .project-card__img-wrap { height: 55vw; flex: none; }
-            .project-card__info { padding-top: 36px; }
+            .project-card { width: 100%; height: auto; }
+            .project-card__img-wrap { height: 60vw; flex: none; }
+            .project-card__info { padding-top: 40px; padding-bottom: 0; }
+            .project-card__name { font-size: 20px; }
+
+            .leistungen__item-header {
+                padding: 18px 0;
+                min-height: 56px;
+                cursor: pointer;
+            }
+            .leistungen__toggle { font-size: 26px; }
 
             .ueber__grid { grid-template-columns: 1fr; }
             .ueber__right { padding-top: 0; }
+            .ueber__stats { grid-template-columns: 1fr 1fr; gap: 20px; }
 
             .kontakt__grid { grid-template-columns: 1fr; }
+            /* make phone/email tappable-feeling */
+            .kontakt__line { padding: 6px 0; }
+
+            /* prevent iOS auto-zoom on form focus (needs 16px min) */
+            .form-field__input,
+            .form-field__textarea { font-size: 16px; }
+            .form-submit { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
 
             .aw-item + .aw-item {
                 border-left: none;
@@ -863,6 +912,21 @@
                 margin-top: 24px;
             }
             .aw-items { flex-direction: column; align-items: center; }
+
+            .footer__row2 { justify-content: center; text-align: center; }
+            .footer__row1 { justify-content: center; text-align: center; }
+            .footer__legal { justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            :root { --h-pad: 20px; }
+            .hero__h1 { font-size: clamp(52px, 14vw, 72px); }
+            .project-card__img-wrap { height: 65vw; }
+            .leistungen__heading { font-size: clamp(36px, 10vw, 56px); }
+            .kontakt__heading { font-size: clamp(44px, 13vw, 72px); }
+            .ueber__heading { font-size: clamp(30px, 8vw, 44px); }
+            .aw-item { padding: 0 16px; }
+            .nav__overlay-link { font-size: 36px; }
         }
     </style>
 </head>
@@ -981,8 +1045,7 @@
 
                 <div class="projekte__track" id="proj-track">
 
-                    <!-- Bilder: src="img/projekt-01.jpg" einsetzen — Ordner img/ neben index.html anlegen -->
-                    <article class="project-card">
+                    <a class="project-card" href="projekt-01.html">
                         <div class="project-card__img-wrap">
                             <img src="img/projekt-01.jpg" alt="Wohnhaus Salzburg" class="project-img" loading="lazy" id="proj-img-1">
                         </div>
@@ -991,9 +1054,9 @@
                             <h3 class="project-card__name">Wohnhaus Salzburg</h3>
                             <p class="project-card__meta">Neubau · 2023 <span class="project-card__arrow">→</span></p>
                         </div>
-                    </article>
+                    </a>
 
-                    <article class="project-card">
+                    <a class="project-card" href="projekt-02.html">
                         <div class="project-card__img-wrap">
                             <img src="img/projekt-02.jpg" alt="Kajetanerkirche Salzburg" class="project-img" loading="lazy" id="proj-img-2">
                         </div>
@@ -1002,9 +1065,9 @@
                             <h3 class="project-card__name">Kajetanerkirche Salzburg</h3>
                             <p class="project-card__meta">Restaurierung · 2021 <span class="project-card__arrow">→</span></p>
                         </div>
-                    </article>
+                    </a>
 
-                    <article class="project-card">
+                    <a class="project-card" href="projekt-03.html">
                         <div class="project-card__img-wrap">
                             <img src="img/projekt-03.jpg" alt="Landhaus Flachgau" class="project-img" loading="lazy" id="proj-img-3">
                         </div>
@@ -1013,9 +1076,9 @@
                             <h3 class="project-card__name">Landhaus Flachgau</h3>
                             <p class="project-card__meta">Holzbau · 2022 <span class="project-card__arrow">→</span></p>
                         </div>
-                    </article>
+                    </a>
 
-                    <article class="project-card">
+                    <a class="project-card" href="projekt-04.html">
                         <div class="project-card__img-wrap">
                             <img src="img/projekt-04.jpg" alt="Bürogebäude Hallein" class="project-img" loading="lazy" id="proj-img-4">
                         </div>
@@ -1024,9 +1087,9 @@
                             <h3 class="project-card__name">Bürogebäude Hallein</h3>
                             <p class="project-card__meta">Umbau · 2020 <span class="project-card__arrow">→</span></p>
                         </div>
-                    </article>
+                    </a>
 
-                    <article class="project-card">
+                    <a class="project-card" href="projekt-05.html">
                         <div class="project-card__img-wrap">
                             <img src="img/projekt-05.jpg" alt="Gartenanlage Bad Ischl" class="project-img" loading="lazy" id="proj-img-5">
                         </div>
@@ -1035,7 +1098,7 @@
                             <h3 class="project-card__name">Gartenanlage Bad Ischl</h3>
                             <p class="project-card__meta">Landschaftsgestaltung · 2023 <span class="project-card__arrow">→</span></p>
                         </div>
-                    </article>
+                    </a>
 
                 </div><!-- /proj-track -->
             </div><!-- /proj-sticky -->
@@ -1235,14 +1298,14 @@
                             Maffeigasse 10, A-5411 Oberalm
                             <span class="kontakt__arrow">→</span>
                         </p>
-                        <p class="kontakt__line">
+                        <a class="kontakt__line" href="tel:+436643575265" style="text-decoration:none;">
                             +43 664 3575265
                             <span class="kontakt__arrow">→</span>
-                        </p>
-                        <p class="kontakt__line">
+                        </a>
+                        <a class="kontakt__line" href="mailto:office@geistlwegArch.com" style="text-decoration:none;">
                             office@geistlwegArch.com
                             <span class="kontakt__arrow">→</span>
-                        </p>
+                        </a>
                     </div>
                 </div>
 
@@ -1288,7 +1351,8 @@
             </div>
         </div>
         <div class="footer__row2">
-            <span class="footer__copy">© 2024 Geistlweg Architektur · Mag.arch. Edgar Spraiter</span>
+            <span class="footer__copy">© 2026 Geistlweg Architektur · Mag.arch. Edgar Spraiter</span>
+            <span class="footer__credit">designed by <a href="https://www.padigital.at/webdesign" target="_blank" rel="noopener">PA Digital</a></span>
         </div>
     </div>
 </footer>
@@ -1397,34 +1461,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!rafId) rafId = requestAnimationFrame(lerpStep);
         }, { passive: true });
 
-        // Links/buttons
-        document.querySelectorAll('a, button, [role="button"]').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                gsap.to(cursor, { width: 48, height: 48, duration: 0.3, ease: 'power2.out' });
-                cursor.classList.add('is-hover');
-                cursor.classList.remove('is-project');
-                gsap.to(cursorLb, { opacity: 0, duration: 0.15 });
-            });
-            el.addEventListener('mouseleave', () => {
-                gsap.to(cursor, { width: 8, height: 8, duration: 0.3, ease: 'power2.out' });
-                cursor.classList.remove('is-hover', 'is-project');
-            });
-        });
-
-        // Project cards
-        document.querySelectorAll('.project-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
+        // Single document-level handler — avoids child-element enter/leave conflicts
+        let _cursorState = 'default';
+        function setCursorState(state) {
+            if (state === _cursorState) return;
+            _cursorState = state;
+            if (state === 'project') {
                 gsap.to(cursor, { width: 80, height: 80, duration: 0.35, ease: 'power2.out' });
-                cursor.classList.add('is-project');
-                cursor.classList.remove('is-hover');
+                cursor.className = 'cursor is-project';
                 gsap.to(cursorLb, { opacity: 1, duration: 0.25 });
-            });
-            card.addEventListener('mouseleave', () => {
-                gsap.to(cursor, { width: 8, height: 8, duration: 0.3, ease: 'power2.out' });
-                cursor.classList.remove('is-project');
+            } else if (state === 'hover') {
+                gsap.to(cursor, { width: 48, height: 48, duration: 0.3, ease: 'power2.out' });
+                cursor.className = 'cursor is-hover';
                 gsap.to(cursorLb, { opacity: 0, duration: 0.15 });
-            });
-        });
+            } else {
+                gsap.to(cursor, { width: 8, height: 8, duration: 0.3, ease: 'power2.out' });
+                cursor.className = 'cursor';
+                gsap.to(cursorLb, { opacity: 0, duration: 0.15 });
+            }
+        }
+        document.addEventListener('mouseover', e => {
+            if (e.target.closest('.project-card'))            setCursorState('project');
+            else if (e.target.closest('a, button, [role="button"]')) setCursorState('hover');
+            else                                               setCursorState('default');
+        }, { passive: true });
     }
 
     // ============================================================

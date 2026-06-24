@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wohnhaus Salzburg — Geistlweg Architektur</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300&display=swap');
+
+        :root {
+            --color-bg:        #F5F2EE;
+            --color-ink:       #1A1814;
+            --color-ink-muted: #6B6560;
+            --color-line:      #D8D3CC;
+            --color-accent:    #C8B89A;
+            --max-width:       1440px;
+            --h-pad:           clamp(24px, 4vw, 80px);
+            --section-pad:     clamp(80px, 10vw, 160px);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--color-bg);
+            color: var(--color-ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            cursor: none;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .page-wrapper { opacity: 0; }
+
+        /* Cursor */
+        .cursor {
+            position: fixed; top: 0; left: 0;
+            width: 8px; height: 8px;
+            background: var(--color-ink);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            will-change: transform;
+        }
+        .cursor.is-hover { background: transparent; border: 1px solid var(--color-ink); }
+
+        /* Nav */
+        .nav {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 72px;
+            z-index: 1000;
+            transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+        }
+        .nav.is-scrolled {
+            background: rgba(245,242,238,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .nav__inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 100%; max-width: var(--max-width);
+            margin: 0 auto; padding: 0 var(--h-pad);
+        }
+        .nav__logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300; font-size: 18px;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--color-ink); text-decoration: none;
+        }
+        .nav__links { list-style: none; display: flex; gap: 40px; }
+        .nav__link {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--color-ink); text-decoration: none;
+            position: relative; padding-bottom: 3px;
+        }
+        .nav__link::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 1px; background: var(--color-accent);
+            transition: width 0.3s ease;
+        }
+        .nav__link:hover::after { width: 100%; }
+        .nav__back {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--color-ink-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            transition: color 0.2s;
+        }
+        .nav__back:hover { color: var(--color-ink); }
+
+        /* Container */
+        .container {
+            max-width: var(--max-width); margin: 0 auto;
+            padding-left: var(--h-pad); padding-right: var(--h-pad);
+        }
+
+        /* Hero */
+        .proj-hero {
+            height: 100svh; position: relative;
+            display: flex; align-items: flex-end;
+            overflow: hidden;
+        }
+        .proj-hero__bg {
+            position: absolute; inset: 0;
+            background-color: var(--color-bg);
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0px, transparent 11px,
+                var(--color-line) 11px, var(--color-line) 12px
+            );
+        }
+        .proj-hero__bg img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .proj-hero__overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(26,24,20,0.65) 0%, transparent 60%);
+        }
+        .proj-hero__content {
+            position: relative; z-index: 2;
+            padding-bottom: var(--section-pad);
+            padding-left: var(--h-pad); padding-right: var(--h-pad);
+            max-width: var(--max-width); width: 100%; margin: 0 auto;
+        }
+        .proj-hero__num {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic; font-size: 14px;
+            letter-spacing: 0.2em; color: var(--color-accent);
+            margin-bottom: 16px; display: block;
+        }
+        .proj-hero__title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300; font-size: clamp(56px, 8vw, 120px);
+            line-height: 0.95; color: #fff; margin: 0;
+        }
+        .proj-hero__sub {
+            margin-top: 20px;
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+        }
+
+        /* Meta bar */
+        .proj-meta {
+            border-bottom: 1px solid var(--color-line);
+            padding: 36px 0;
+        }
+        .proj-meta__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .proj-meta__item {}
+        .proj-meta__label {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--color-ink-muted); display: block; margin-bottom: 8px;
+        }
+        .proj-meta__value {
+            font-family: 'Cormorant Garamond', serif; font-weight: 300;
+            font-size: 22px; color: var(--color-ink);
+        }
+
+        /* Text section */
+        .proj-text { padding: var(--section-pad) 0; }
+        .proj-text__grid {
+            display: grid; grid-template-columns: 5fr 7fr; gap: clamp(40px, 6vw, 100px);
+            align-items: start;
+        }
+        .proj-text__statement {
+            font-family: 'Cormorant Garamond', serif; font-weight: 300;
+            font-size: clamp(28px, 3vw, 42px); line-height: 1.2;
+            position: sticky; top: 120px;
+        }
+        .proj-text__body p {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 15px; line-height: 1.75; color: var(--color-ink-muted);
+            margin-bottom: 20px;
+        }
+
+        /* Gallery */
+        .proj-gallery { padding-bottom: var(--section-pad); }
+        .proj-gallery__grid {
+            display: grid; grid-template-columns: 7fr 5fr; gap: 16px;
+            margin-bottom: 16px;
+        }
+        .proj-gallery__grid--sm {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+        }
+        .gallery-img {
+            background-color: var(--color-bg);
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0px, transparent 11px,
+                var(--color-line) 11px, var(--color-line) 12px
+            );
+            overflow: hidden; position: relative;
+        }
+        .gallery-img img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            display: block;
+        }
+        .gallery-img--tall { aspect-ratio: 3/4; }
+        .gallery-img--wide { aspect-ratio: 4/3; }
+        .gallery-img--sq   { aspect-ratio: 1/1; }
+
+        /* Next project */
+        .proj-next {
+            border-top: 1px solid var(--color-line);
+            padding: clamp(60px, 8vw, 100px) 0;
+        }
+        .proj-next__inner {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .proj-next__label {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--color-ink-muted);
+        }
+        .proj-next__link {
+            font-family: 'Cormorant Garamond', serif; font-weight: 300;
+            font-size: clamp(36px, 5vw, 64px); color: var(--color-ink);
+            text-decoration: none; display: flex; align-items: center; gap: 20px;
+            transition: gap 0.3s ease;
+        }
+        .proj-next__link:hover { gap: 32px; }
+        .proj-next__arrow { font-size: 0.7em; }
+
+        /* Footer */
+        footer { background: var(--color-ink); padding: 36px 0; }
+        .footer__row1 {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; flex-wrap: wrap; gap: 12px;
+        }
+        .footer__brand {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+        }
+        .footer__legal { display: flex; gap: 24px; }
+        .footer__legal a {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+            color: rgba(255,255,255,0.4); text-decoration: none;
+        }
+        .footer__row2 {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .footer__copy {
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3);
+        }
+        .footer__credit { font-family: 'Inter', sans-serif; font-weight: 300; font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.25); }
+        .footer__credit a { color: rgba(255,255,255,0.35); text-decoration: none; }
+        .footer__credit a:hover { color: rgba(255,255,255,0.6); }
+
+        /* Reveals */
+        .js-reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.85s ease, transform 0.85s ease; }
+        .js-reveal.is-visible { opacity: 1; transform: none; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            .cursor { display: none; }
+            .nav__links { display: none; }
+            .proj-meta__grid { grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+            .proj-text__grid { grid-template-columns: 1fr; gap: 32px; }
+            .proj-text__statement { position: static; }
+            .proj-gallery__grid { grid-template-columns: 1fr; }
+            .proj-gallery__grid--sm { grid-template-columns: 1fr 1fr; }
+            .proj-next__link { font-size: clamp(28px, 7vw, 48px); }
+            .footer__row2 { justify-content: center; text-align: center; }
+            .footer__row1 { justify-content: center; text-align: center; }
+            .footer__legal { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            :root { --h-pad: 20px; }
+            .proj-gallery__grid--sm { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<header>
+    <nav class="nav" id="nav">
+        <div class="nav__inner">
+            <a href="index.html" class="nav__logo">Geistlweg</a>
+            <ul class="nav__links">
+                <li><a href="index.html#projekte"   class="nav__link">Projekte</a></li>
+                <li><a href="index.html#leistungen" class="nav__link">Leistungen</a></li>
+                <li><a href="index.html#ueber"      class="nav__link">Über</a></li>
+                <li><a href="index.html#kontakt"    class="nav__link">Kontakt</a></li>
+            </ul>
+            <a href="index.html#projekte" class="nav__back">← Alle Projekte</a>
+        </div>
+    </nav>
+</header>
+
+<div class="page-wrapper" id="page-wrapper">
+<main>
+
+    <section class="proj-hero">
+        <div class="proj-hero__bg">
+            <img src="img/projekt-01.jpg" alt="Wohnhaus Salzburg" loading="eager">
+        </div>
+        <div class="proj-hero__overlay"></div>
+        <div class="proj-hero__content">
+            <span class="proj-hero__num">01 / 05</span>
+            <h1 class="proj-hero__title">Wohnhaus<br>Salzburg</h1>
+            <p class="proj-hero__sub">Neubau · 2023 · Salzburg</p>
+        </div>
+    </section>
+
+    <section class="proj-meta">
+        <div class="container">
+            <div class="proj-meta__grid">
+                <div class="proj-meta__item js-reveal">
+                    <span class="proj-meta__label">Typologie</span>
+                    <span class="proj-meta__value">Einfamilienhaus</span>
+                </div>
+                <div class="proj-meta__item js-reveal" data-delay="0.07">
+                    <span class="proj-meta__label">Leistung</span>
+                    <span class="proj-meta__value">Neubau</span>
+                </div>
+                <div class="proj-meta__item js-reveal" data-delay="0.14">
+                    <span class="proj-meta__label">Fertigstellung</span>
+                    <span class="proj-meta__value">2023</span>
+                </div>
+                <div class="proj-meta__item js-reveal" data-delay="0.21">
+                    <span class="proj-meta__label">Nutzfläche</span>
+                    <span class="proj-meta__value">280 m²</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="proj-text">
+        <div class="container">
+            <div class="proj-text__grid">
+                <div class="proj-text__statement js-reveal">
+                    Ein Haus, das den Hang begreift — und aus ihm heraus entsteht.
+                </div>
+                <div class="proj-text__body js-reveal" data-delay="0.15">
+                    <p>Das Einfamilienhaus in der Salzburger Hanglage ist ein Dialog zwischen Topographie und Wohnkultur. Das Grundstück verlangte ein Gebäude, das sich nicht gegen den Hang stemmt, sondern mit ihm arbeitet — gestaffelte Ebenen, die jeweils eigene Außenräume erschließen und unterschiedliche Blickbeziehungen zur Stadt ermöglichen.</p>
+                    <p>Die Materialsprache folgt dem regionalen Kontext: Sichtbeton als tragendes Element, unbehandelte Lärche für Fassade und Innenwände, schwarzer Schiefer im Eingangsbereich. Große Verglasungen zur Süd- und Westseite binden die Panoramaussicht auf die Festung Hohensalzburg ein, während die Nordseite bewusst zurückhaltend bleibt und Schutz vor Witterung bietet.</p>
+                    <p>Im Inneren fließen Wohn- und Essbereich in eine großzügige Ebene zusammen. Raumhohe Schiebetüren öffnen zur Terrasse — der Übergang zwischen innen und außen löst sich auf. Die Schlafräume auf der oberen Ebene erhalten Morgenlicht von Osten und bilden einen ruhigen Gegenpol zum lebhaften Erdgeschoss.</p>
+                    <p>Alle Holzelemente stammen aus dem Salzburger Land, die thermische Hülle wurde im Passivhausstandard ausgeführt. Eine Erdwärmepumpe mit Fußbodenheizung sorgt für energieeffizienten Betrieb über alle Jahreszeiten.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="proj-gallery">
+        <div class="container">
+            <div class="proj-gallery__grid js-reveal">
+                <div class="gallery-img gallery-img--tall"></div>
+                <div class="gallery-img gallery-img--wide"></div>
+            </div>
+            <div class="proj-gallery__grid--sm js-reveal" data-delay="0.1">
+                <div class="gallery-img gallery-img--sq"></div>
+                <div class="gallery-img gallery-img--sq"></div>
+                <div class="gallery-img gallery-img--sq"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="proj-next">
+        <div class="container">
+            <div class="proj-next__inner">
+                <span class="proj-next__label">Nächstes Projekt</span>
+                <a href="projekt-02.html" class="proj-next__link">
+                    Kajetanerkirche <span class="proj-next__arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer__row1">
+            <span class="footer__brand">Geistlweg Architektur</span>
+            <div class="footer__legal">
+                <a href="#">Impressum</a>
+                <a href="#">Datenschutz</a>
+            </div>
+        </div>
+        <div class="footer__row2">
+            <span class="footer__copy">© 2026 Geistlweg Architektur · Mag.arch. Edgar Spraiter</span>
+            <span class="footer__credit">designed by <a href="https://www.padigital.at/webdesign" target="_blank" rel="noopener">PA Digital</a></span>
+        </div>
+    </div>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const delay = parseFloat(el.dataset.delay || 0) * 1000;
+            setTimeout(() => el.classList.add('is-visible'), delay);
+            revealObs.unobserve(el);
+        });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.js-reveal').forEach(el => revealObs.observe(el));
+
+    gsap.to('#page-wrapper', { opacity: 1, duration: 0.6, ease: 'power2.out' });
+
+    ScrollTrigger.create({
+        start: 100,
+        onEnter:     () => document.getElementById('nav').classList.add('is-scrolled'),
+        onLeaveBack: () => document.getElementById('nav').classList.remove('is-scrolled'),
+    });
+
+    if (window.innerWidth >= 768) {
+        const cursor = document.getElementById('cursor');
+        gsap.set(cursor, { xPercent: -50, yPercent: -50, x: -100, y: -100 });
+        const setCX = gsap.quickSetter(cursor, 'x', 'px');
+        const setCY = gsap.quickSetter(cursor, 'y', 'px');
+        let mx=-100, my=-100, cx=-100, cy=-100, rafId=null;
+        function lerpStep() {
+            cx += (mx-cx)*0.14; cy += (my-cy)*0.14;
+            setCX(cx); setCY(cy);
+            if (Math.abs(mx-cx)>0.5||Math.abs(my-cy)>0.5) rafId=requestAnimationFrame(lerpStep);
+            else rafId=null;
+        }
+        document.addEventListener('mousemove', e => {
+            mx=e.clientX; my=e.clientY;
+            if (!rafId) rafId=requestAnimationFrame(lerpStep);
+        }, { passive: true });
+
+        let _state='default';
+        function setCursorState(s) {
+            if (s===_state) return; _state=s;
+            if (s==='hover') {
+                gsap.to(cursor,{width:48,height:48,duration:0.3,ease:'power2.out'});
+                cursor.className='cursor is-hover';
+            } else {
+                gsap.to(cursor,{width:8,height:8,duration:0.3,ease:'power2.out'});
+                cursor.className='cursor';
+            }
+        }
+        document.addEventListener('mouseover', e => {
+            if (e.target.closest('a, button, [role="button"]')) setCursorState('hover');
+            else setCursorState('default');
+        }, { passive: true });
+    }
+});
+</script>
+</body>
+</html>
